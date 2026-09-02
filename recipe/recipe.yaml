@@ -1,0 +1,65 @@
+schema_version: 1
+
+context:
+  name: jupyter-templates
+  version: "0.1.1"
+
+recipe:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/j/jupyter_templates/jupyter_templates-${{ version }}.tar.gz
+  sha256: a5359ed75b72dda1ce35cf87ab4c397e4606f8b9650527d812b9dbef22b5e455
+
+build:
+  number: 3
+
+outputs:
+  - package:
+      name: jupyter-templates
+    build:
+      noarch: python
+      script: ${{ PYTHON }} -m pip install . -vv
+    requirements:
+      host:
+        - python ${{ python_min }}.*
+        - pip
+        - nodejs
+        - yarn <2
+        - hatchling >=1.22.4,<1.23
+        - hatch-jupyter-builder
+        - jupyterlab >=4,<5
+      run:
+        - python >=${{ python_min }}
+        - jupyterlab >=4,<5
+    tests:
+      - python:
+          imports:
+            - jupyter_templates
+          python_version:
+            - ${{ python_min }}.*
+
+  - package:
+      name: jupyter_templates
+    build:
+      noarch: python
+    requirements:
+      host:
+        - python ${{ python_min }}.*
+      run:
+        - python >=${{ python_min }}
+        - ${{ pin_subpackage("jupyter-templates", exact=True) }}
+
+about:
+  homepage: https://github.com/timkpaine/jupyter-templates
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Jupyter notebook templates
+  description: Jupyter notebook templates
+  repository: https://github.com/timkpaine/jupyter-templates
+
+extra:
+  feedstock-name: jupyter-templates
+  recipe-maintainers:
+    - timkpaine
